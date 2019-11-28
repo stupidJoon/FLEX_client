@@ -1,4 +1,4 @@
-package com.example.flex;
+package com.example.flex.Views;
 
 
 import android.os.Bundle;
@@ -7,14 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.flex.R;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DashBoardFragment extends Fragment {
+public class DashboardFragment extends Fragment {
 
 
-    public DashBoardFragment() {
+    public DashboardFragment() {
         // Required empty public constructor
     }
 

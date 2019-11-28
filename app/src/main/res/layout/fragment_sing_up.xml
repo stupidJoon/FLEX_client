@@ -18,11 +18,13 @@
         android:layout_weight="2"
         android:orientation="vertical">
         <EditText
+            android:id="@+id/email_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email..."
             android:layout_marginHorizontal="50dp"/>
         <EditText
+            android:id="@+id/pw_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password..."
@@ -30,13 +32,13 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_gravity="center">
             <Button
-                android:id="@+id/login_btn"
-                android:layout_width="wrap_content"
+                android:id="@+id/signup_btn"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="login"/>
+                android:text="sign up"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
