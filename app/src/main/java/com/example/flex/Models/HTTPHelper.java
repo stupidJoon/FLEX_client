@@ -77,10 +77,8 @@ public class HTTPHelper {
                 Gson gson = new Gson();
                 GetEstatesVO data = gson.fromJson(response.body().string(), GetEstatesVO.class);
                 if (data.status == true) {
-                    for (Estate asset : data.assets) {
-                        DataSingleton.getInstance().estates.add(asset);
-                        notify.run();
-                    }
+                    DataSingleton.getInstance().estates = data.assets;
+                    notify.run();
                 }
                 else {
                     Log.e("GetEstateVO", "Status False");

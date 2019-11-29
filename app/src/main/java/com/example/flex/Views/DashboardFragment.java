@@ -32,15 +32,36 @@ import com.github.mikephil.charting.utils.MPPointF;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class DashboardFragment extends Fragment {
     RecyclerView recycler;
     DashboardAdapter adapter;
+    HashMap<Integer[], ArrayList<Estate>> datas = new HashMap<>();
 
     public DashboardFragment() { }
 
     public void notifyRecycler() {
+        for (Estate estate : DataSingleton.getInstance().estates) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = null;
+            Calendar cal = Calendar.getInstance();
+            try {
+                date = format.parse(estate.created_date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (datas.containsKey(new Integer[]{cal.get(Calendar.YEAR) + 1, cal.get(Calendar.MONTH) + 1})) {
+                datas.get(new Integer[]{cal.get(Calendar.YEAR) + 1, cal.get(Calendar.MONTH) + 1}).add(estate);
+            }
+            else {
+                datas.put(new Integer[]{cal.get(Calendar.YEAR) + 1, cal.get(Calendar.MONTH) + 1}, new ArrayList<Estate>(Arrays.asList(estate)));
+            }
+        }
+        for ()
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
@@ -80,17 +101,9 @@ public class DashboardFragment extends Fragment {
         }
         @Override
         public void onBindViewHolder(@NonNull final DashboardViewHolder dashboardViewHolder, int i) {
+            ArrayList<Estate> estates = datas.get(datas.keySet().toArray()[i]);
+
             ArrayList<PieEntry> entries = new ArrayList<>();
-            for (Estate estate : DataSingleton.getInstance().estates) {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss");
-                try {
-                    Date date = format.parse(estate.created_date);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
             entries.add(new PieEntry(100.0f, "TEST DATA1"));
             entries.add(new PieEntry(200.0f, "TEST DATA2"));
             entries.add(new PieEntry(300.0f, "TEST DATA3"));
@@ -126,7 +139,7 @@ public class DashboardFragment extends Fragment {
         }
         @Override
         public int getItemCount() {
-            return DataSingleton.getInstance().estates.size();
+            return datas.size();
         }
     }
 }
