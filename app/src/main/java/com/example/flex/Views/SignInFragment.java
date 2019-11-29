@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.flex.Models.DataSingleton;
 import com.example.flex.Models.HTTPHelper;
 import com.example.flex.R;
 import com.google.gson.Gson;
@@ -65,12 +66,13 @@ public class SignInFragment extends Fragment {
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                         Gson gson = new Gson();
-                        SignInVO data = gson.fromJson(response.body().string(), SignInVO.class);
+                        final SignInVO data = gson.fromJson(response.body().string(), SignInVO.class);
                         if (data.status == true) {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     Toast.makeText(getActivity(), "Sign In Succeeded", Toast.LENGTH_SHORT).show();
+                                    DataSingleton.getInstance().id = data.id;
                                     Intent i = new Intent(getActivity(), MainActivity.class);;
                                     startActivity(i);
                                 }

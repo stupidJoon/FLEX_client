@@ -1,10 +1,14 @@
 package com.example.flex.Models;
 
 import android.util.Log;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -60,5 +64,33 @@ public class HTTPHelper {
         RequestBody formBody = new FormBody.Builder().add("type", estate.type).add("title", estate.title).add("money", estate.money).build();
         Request request = new Request.Builder().url("http://54.180.57.73:3000/assets").post(formBody).build();
         okHttpClient.newCall(request).enqueue(callback);
+    }
+    public static void getEstates(final Runnable notify) {
+        Request request = new Request.Builder().url("http://54.180.57.73:3000/assets").build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.e("HTTP", "Request Get Estates Failed Error: " + e.toString());
+            }
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                Gson gson = new Gson();
+                GetEstatesVO data = gson.fromJson(response.body().string(), GetEstatesVO.class);
+                if (data.status == true) {
+                    for (Estate asset : data.assets) {
+                        DataSingleton.getInstance().estates.add(asset);
+                        notify.run();
+                    }
+                }
+                else {
+                    Log.e("GetEstateVO", "Status False");
+                }
+            }
+        });
+    }
+    class GetEstatesVO {
+        boolean status;
+        String message;
+        ArrayList<Estate> assets;
     }
 }

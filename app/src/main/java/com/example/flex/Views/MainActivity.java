@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.flex.Models.DataSingleton;
 import com.example.flex.Models.Estate;
 import com.example.flex.Models.HTTPHelper;
 import com.example.flex.R;
@@ -44,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
         fragments.add(new SettingsFragment());
         viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
+        HTTPHelper.getEstates(new Runnable() {
+            @Override
+            public void run() {
+                ((DashboardFragment)fragments.get(0)).notifyRecycler();
+            }
+        });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -58,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             new CustomDialog(MainActivity.this, getResources().getDisplayMetrics(), CustomDialog.IncomeOutcome.INCOME, new CustomDialog.CustomCallBack() {
                 @Override
                 public void positive(String title, String money) {
-                    HTTPHelper.addEstate(new Estate("income", title, money), new Callback() {
+                    HTTPHelper.addEstate(new Estate(DataSingleton.getInstance().id, "income", title, money, null), new Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
                             Toast.makeText(getApplicationContext(), "Add Estate Error", Toast.LENGTH_SHORT).show();
@@ -71,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        ((DashboardFragment)fragments.get(0)).notifyRecycler();
                                         Toast.makeText(getApplicationContext(), "데이터 추가에 성공했습니다", Toast.LENGTH_SHORT).show();
                                     }
                                 });
@@ -92,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             new CustomDialog(MainActivity.this, getResources().getDisplayMetrics(), CustomDialog.IncomeOutcome.OUTCOME, new CustomDialog.CustomCallBack() {
                 @Override
                 public void positive(String title, String money) {
-                    HTTPHelper.addEstate(new Estate("outcome", title, money), new Callback() {
+                    HTTPHelper.addEstate(new Estate(DataSingleton.getInstance().id, "outcome", title, money, null), new Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
                             Toast.makeText(getApplicationContext(), "Add Estate Error", Toast.LENGTH_SHORT).show();
