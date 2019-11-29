@@ -19,15 +19,11 @@ import android.widget.TextView;
 import com.example.flex.Models.DataSingleton;
 import com.example.flex.Models.Estate;
 import com.example.flex.R;
-import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.MPPointF;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,12 +31,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class DashboardFragment extends Fragment {
     RecyclerView recycler;
     DashboardAdapter adapter;
-    HashMap<String, ArrayList<Estate>> datas = new HashMap<>();
+    LinkedHashMap<String, ArrayList<Estate>> datas = new LinkedHashMap<>();
 
     public DashboardFragment() { }
 
@@ -54,19 +50,13 @@ public class DashboardFragment extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            String key = Integer.toString(cal.get(Calendar.YEAR)) + "년" + Integer.toString(cal.get(Calendar.MONTH) + 1) + "월";
-            Log.e("KEYKEY", "TEST");
+            cal.setTime(date);
+            String key = Integer.toString(cal.get(Calendar.YEAR)) + "년 " + Integer.toString(cal.get(Calendar.MONTH) + 1) + "월";
             if (datas.containsKey(key)) {
                 datas.get(key).add(estate);
             }
             else {
                 datas.put(key, new ArrayList<Estate>(Arrays.asList(estate)));
-            }
-        }
-        for (String key : datas.keySet()) {
-            Log.e("Key", key);
-            for (Estate estate : datas.get(key)) {
-                Log.e("Estate", estate.created_date);
             }
         }
         if (adapter != null) {
@@ -113,14 +103,15 @@ public class DashboardFragment extends Fragment {
         }
         @Override
         public void onBindViewHolder(@NonNull final DashboardViewHolder dashboardViewHolder, int i) {
-            ArrayList<Estate> estates = datas.get(datas.keySet().toArray()[i]);
+            String key = (String)datas.keySet().toArray()[i];
+            ArrayList<Estate> estates = datas.get(key);
+
+            dashboardViewHolder.title.setText(key);
 
             ArrayList<PieEntry> entries = new ArrayList<>();
-            entries.add(new PieEntry(100.0f, "TEST DATA1"));
-            entries.add(new PieEntry(200.0f, "TEST DATA2"));
-            entries.add(new PieEntry(300.0f, "TEST DATA3"));
-            entries.add(new PieEntry(400.0f, "TEST DATA4"));
-            entries.add(new PieEntry(500.0f, "TEST DATA5"));
+            for (Estate estate : estates) {
+                entries.add(new PieEntry(Integer.valueOf(estate.money), estate.title));
+            }
 
             PieDataSet dataSet = new PieDataSet(entries, "TEST LABEL");
             dataSet.setSliceSpace(3.0f);
@@ -139,7 +130,7 @@ public class DashboardFragment extends Fragment {
             dataSet.setColors(colors);
 
             PieData data = new PieData(dataSet);
-            data.setValueFormatter(new PercentFormatter(dashboardViewHolder.pieChart));
+            //data.setValueFormatter(new PercentFormatter(dashboardViewHolder.pieChart));
             data.setValueTextSize(14.0f);
             data.setValueTextColor(Color.BLACK);
 
