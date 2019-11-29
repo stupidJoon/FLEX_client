@@ -56,4 +56,9 @@ public class HTTPHelper {
             }
         });
     }
+    public static void addEstate(Estate estate, Callback callback) {
+        RequestBody formBody = new FormBody.Builder().add("type", estate.type).add("title", estate.title).add("money", estate.money).build();
+        Request request = new Request.Builder().url("http://54.180.57.73:3000/assets").post(formBody).build();
+        okHttpClient.newCall(request).enqueue(callback);
+    }
 }

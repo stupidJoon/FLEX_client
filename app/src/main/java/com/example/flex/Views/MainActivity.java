@@ -1,7 +1,6 @@
 package com.example.flex.Views;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -16,9 +15,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.flex.Models.Estate;
+import com.example.flex.Models.HTTPHelper;
 import com.example.flex.R;
+import com.google.gson.Gson;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.ArrayList;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     ViewPager viewPager;
@@ -31,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
-        fragments.add(new SettingsFragment());
         fragments.add(new DashboardFragment());
+        fragments.add(new SettingsFragment());
         viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
     }
@@ -48,16 +57,68 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.income) {
             new CustomDialog(MainActivity.this, getResources().getDisplayMetrics(), CustomDialog.IncomeOutcome.INCOME, new CustomDialog.CustomCallBack() {
                 @Override
-                public void positive(int money) {
-                    Toast.makeText(MainActivity.this, "Positive", Toast.LENGTH_SHORT).show();
+                public void positive(String title, String money) {
+                    HTTPHelper.addEstate(new Estate("income", title, money), new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            Toast.makeText(getApplicationContext(), "Add Estate Error", Toast.LENGTH_SHORT).show();
+                        }
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            Gson gson = new Gson();
+                            AddEstateVO data = gson.fromJson(response.body().string(), AddEstateVO.class);
+                            if (data.status == true) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), "데이터 추가에 성공했습니다", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                            else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), "데이터 추가에 실패했습니다", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                    });
                 }
             }).show();
         }
         else if (item.getItemId() == R.id.outcome) {
             new CustomDialog(MainActivity.this, getResources().getDisplayMetrics(), CustomDialog.IncomeOutcome.OUTCOME, new CustomDialog.CustomCallBack() {
                 @Override
-                public void positive(int money) {
-                    Toast.makeText(MainActivity.this, "Positive", Toast.LENGTH_SHORT).show();
+                public void positive(String title, String money) {
+                    HTTPHelper.addEstate(new Estate("outcome", title, money), new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            Toast.makeText(getApplicationContext(), "Add Estate Error", Toast.LENGTH_SHORT).show();
+                        }
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            Gson gson = new Gson();
+                            AddEstateVO data = gson.fromJson(response.body().string(), AddEstateVO.class);
+                            if (data.status == true) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), "데이터 추가에 성공했습니다", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                            else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), "데이터 추가에 실패했습니다", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                    });
                 }
             }).show();
         }
@@ -65,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class MainPagerAdapter extends FragmentPagerAdapter {
-        String[] titles = new String[]{"설정", "수입/지출 대시보드"};
+        String[] titles = new String[]{"수입/지출 대시보드", "설정"};
 
         public MainPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -84,5 +145,15 @@ public class MainActivity extends AppCompatActivity {
         public int getCount() {
             return fragments.size();
         }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return false;
+        }
+    }
+
+    class AddEstateVO {
+        boolean status;
+        String message;
     }
 }

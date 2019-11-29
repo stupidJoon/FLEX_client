@@ -20,8 +20,6 @@ public class CustomDialog extends Dialog {
     EditText moneyEdit, titleEdit;
     Button positiveBtn, negativeBtn;
 
-    int money = 0;
-
     public CustomDialog(final Context context, DisplayMetrics displayMetrics, final IncomeOutcome incomeOutcome, final CustomCallBack customCallBack) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);   //다이얼로그의 타이틀바를 없애주는 옵션입니다.
@@ -64,7 +62,7 @@ public class CustomDialog extends Dialog {
                     }
                 }
                 else {
-                    customCallBack.positive(money);
+                    customCallBack.positive(titleEdit.getText().toString().trim(), moneyEdit.getText().toString().trim());
                     dismiss();
                 }
             }
@@ -78,7 +76,7 @@ public class CustomDialog extends Dialog {
     }
 
     interface CustomCallBack {
-        void positive(int money);
+        void positive(String title, String money);
     }
     enum IncomeOutcome {
         INCOME, OUTCOME
