@@ -104,17 +104,22 @@ public class DashboardFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull final DashboardViewHolder dashboardViewHolder, int i) {
             String key = (String)datas.keySet().toArray()[i];
+            dashboardViewHolder.title.setText(key + " 총 수입/지출");
+
             ArrayList<Estate> estates = datas.get(key);
-
-            dashboardViewHolder.title.setText(key);
-
-            ArrayList<PieEntry> entries = new ArrayList<>();
+            ArrayList<PieEntry> incomeEntries = new ArrayList<>();
+            ArrayList<PieEntry> outcomeEntries = new ArrayList<>();
             for (Estate estate : estates) {
-                entries.add(new PieEntry(Integer.valueOf(estate.money), estate.title));
+                if (estate.type.equals("income")) {
+                    incomeEntries.add(new PieEntry(Integer.valueOf(estate.money), estate.created_date));
+                }
+                else {
+                    outcomeEntries.add(new PieEntry(Integer.valueOf(estate.money), estate.created_date));
+                }
             }
 
-            PieDataSet dataSet = new PieDataSet(entries, "TEST LABEL");
-            dataSet.setSliceSpace(3.0f);
+            PieDataSet incomeDataSet = new PieDataSet(incomeEntries, "수입");
+            PieDataSet outcomeDataSet = new PieDataSet(outcomeEntries, "지출");
             ArrayList<Integer> colors = new ArrayList<>();
             for (int c : ColorTemplate.VORDIPLOM_COLORS)
                 colors.add(c);
@@ -127,10 +132,12 @@ public class DashboardFragment extends Fragment {
             for (int c : ColorTemplate.PASTEL_COLORS)
                 colors.add(c);
             colors.add(ColorTemplate.getHoloBlue());
-            dataSet.setColors(colors);
+            incomeDataSet.setColors(colors);
+            outcomeDataSet.setColors(colors);
 
-            PieData data = new PieData(dataSet);
-            //data.setValueFormatter(new PercentFormatter(dashboardViewHolder.pieChart));
+            PieData data = new PieData();
+            data.addDataSet(incomeDataSet);
+//            data.addDataSet(outcomeDataSet);
             data.setValueTextSize(14.0f);
             data.setValueTextColor(Color.BLACK);
 
