@@ -145,11 +145,6 @@ public class MainActivity extends AppCompatActivity {
         public int getCount() {
             return fragments.size();
         }
-
-        @Override
-        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-            return false;
-        }
     }
 
     class AddEstateVO {
