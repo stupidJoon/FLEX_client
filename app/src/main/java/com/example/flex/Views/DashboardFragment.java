@@ -40,7 +40,7 @@ import java.util.HashMap;
 public class DashboardFragment extends Fragment {
     RecyclerView recycler;
     DashboardAdapter adapter;
-    HashMap<Integer[], ArrayList<Estate>> datas = new HashMap<>();
+    HashMap<String, ArrayList<Estate>> datas = new HashMap<>();
 
     public DashboardFragment() { }
 
@@ -54,16 +54,28 @@ public class DashboardFragment extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            if (datas.containsKey(new Integer[]{cal.get(Calendar.YEAR) + 1, cal.get(Calendar.MONTH) + 1})) {
-                datas.get(new Integer[]{cal.get(Calendar.YEAR) + 1, cal.get(Calendar.MONTH) + 1}).add(estate);
+            String key = Integer.toString(cal.get(Calendar.YEAR)) + "년" + Integer.toString(cal.get(Calendar.MONTH) + 1) + "월";
+            Log.e("KEYKEY", "TEST");
+            if (datas.containsKey(key)) {
+                datas.get(key).add(estate);
             }
             else {
-                datas.put(new Integer[]{cal.get(Calendar.YEAR) + 1, cal.get(Calendar.MONTH) + 1}, new ArrayList<Estate>(Arrays.asList(estate)));
+                datas.put(key, new ArrayList<Estate>(Arrays.asList(estate)));
             }
         }
-        for ()
+        for (String key : datas.keySet()) {
+            Log.e("Key", key);
+            for (Estate estate : datas.get(key)) {
+                Log.e("Estate", estate.created_date);
+            }
+        }
         if (adapter != null) {
-            adapter.notifyDataSetChanged();
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                }
+            });
         }
     }
 
